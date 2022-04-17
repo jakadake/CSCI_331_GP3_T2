@@ -50,6 +50,18 @@
     <ClInclude Include="LIBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="blockBuf.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="recBuf.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="blockFile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="blockIndex.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="primaryindex.cpp">
@@ -65,6 +77,18 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="blockBuf.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="recBuf.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="blockFile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="blockIndex.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

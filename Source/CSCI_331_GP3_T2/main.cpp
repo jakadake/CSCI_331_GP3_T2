@@ -4,41 +4,7 @@ Main program
 @author Jake Haapoja, Ken Stearns, Nathan O'Connor, Zach Sawicki
 */
 
-/**
-project objectives
-*1. process with a buffer and convert the given CSV files into a length-indicated, comma-seperated format with a header record
-*2. extend read and unpack methods for length-indicated records
-*3. use a buffer to read and write the header record
-*4. output tables as in GP1 from both csv files
-5. create in ram, then write to a file, an index of the zip records file.
-6. load an index file into memory, and search for a particular zip record, then print it to the console from the data file
-	- use a header record for the index file
-	- use command line flags to specify the desired zip record
-	- notify the user if the record is not found, or if it is, display the record to the console with fields labeled
-7. create a doxygen pdf, user guide with command line options and sample output, a design document, and a test document
-*/
 
-/**
-note: program needs 2 main functions
-	1. read a csv file, build an index and length-indicated data file, then output a table as in GP1
-	2. search a generated data file for and display a specific record without loading the whole file into memory
-*/
-/**
-Header Record Architecture:
--file structure type
--version of your file structure type (we may add features in subsequent versions)
--header record size
--size format type {ASCII or binary}
--index file name
--index file schema information {how to read the index file format}
--record count
--count of fields per record
--for each field:
---name or ID
---type schema
-	(format to read or write)
--indicate (ordinally) which field serves as the primary key
-*/
 
 #include "primaryindex.h"
 #include "delimBuffer.h"

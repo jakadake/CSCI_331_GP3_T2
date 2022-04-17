@@ -28,16 +28,24 @@
     <None Include="us_postal_codes_ROWS_RANDOMIZED.csv" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="blockBuf.h" />
+    <ClInclude Include="blockFile.h" />
+    <ClInclude Include="blockIndex.h" />
     <ClInclude Include="delimBuffer.h" />
     <ClInclude Include="LIBuffer.h" />
     <ClInclude Include="primaryindex.h" />
+    <ClInclude Include="recBuf.h" />
     <ClInclude Include="zip.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="blockBuf.cpp" />
+    <ClCompile Include="blockFile.cpp" />
+    <ClCompile Include="blockIndex.cpp" />
     <ClCompile Include="delimBuffer.cpp" />
     <ClCompile Include="LIBuffer.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="primaryindex.cpp" />
+    <ClCompile Include="recBuf.cpp" />
     <ClCompile Include="zip.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
