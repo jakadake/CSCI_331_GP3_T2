@@ -248,6 +248,7 @@ void primaryIndex::transfer(vector<vector<zip>>& states, string headerData) {
 			temp.append(to_string(states[i][j].getLon()));
 
 			count = temp.size();
+			
 			buf.pack(temp);
 			buf.write(dFile);
 

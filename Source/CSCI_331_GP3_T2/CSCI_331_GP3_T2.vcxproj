@@ -28,6 +28,7 @@
     <None Include="us_postal_codes_ROWS_RANDOMIZED.csv" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="block.h" />
     <ClInclude Include="blockBuf.h" />
     <ClInclude Include="blockFile.h" />
     <ClInclude Include="blockIndex.h" />
@@ -38,6 +39,7 @@
     <ClInclude Include="zip.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="block.cpp" />
     <ClCompile Include="blockBuf.cpp" />
     <ClCompile Include="blockFile.cpp" />
     <ClCompile Include="blockIndex.cpp" />

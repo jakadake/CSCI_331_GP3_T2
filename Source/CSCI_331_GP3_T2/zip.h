@@ -70,6 +70,7 @@ public:
 	}
  
 private:
+	int size;
 	int num;
 	float lat;
 	float lon;

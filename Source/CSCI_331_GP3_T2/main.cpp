@@ -1,10 +1,31 @@
-/**
+﻿/**
 Main program 
 @brief reads zip codes in from a csv file, then prints a table organized by state with most east, west, north, and south zips
 @author Jake Haapoja, Ken Stearns, Nathan O'Connor, Zach Sawicki
 */
 
-
+/**
+Header Record Architecture:
+file structure type {blocked sequence set with comma separated fields, and length-indicated records}
+version of your file structure type (we may add features in subsequent versions)	--> 1.0
+header record size  --> 512
+number of bytes for each record size integer (if fixed-size) --> 2
+size format type {ASCII or binary}	--> ASCII
+block size {default to (512 Bytes / block)} -->512
+minimum block capacity {default to 50%}, except for, possibly, the last block --> 50
+index file name
+index file schema information {how to read the index file format}
+record count
+block count
+count of fields per record
+for each field:
+	-name or ID
+	-type schema (format to read or write)
+indicate (ordinally) which field serves as the primary key
+RBN link to the block avail-list {RBN ↔ Relative Block Number}
+RBN link to the active sequence set list
+stale flag
+*/
 
 #include "primaryindex.h"
 #include "delimBuffer.h"
@@ -157,6 +178,11 @@ int main(int argc, char* argv[]) {
 				break;
 			}
 		}
+	}
+	else if (arg1 == "-b") {
+		
+
+
 	}
 	else {	// invalid arguments 
 
