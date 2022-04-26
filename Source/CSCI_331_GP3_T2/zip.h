@@ -42,27 +42,27 @@ public:
 
 	void setNum(int newNum) { num = newNum; };
 
-	int getNum() { return num; };
+	const int getNum() { return num; };
 
 	void setCity(string newCity) { city = newCity; };
 
-	string getCity() { return city; };
+	const string getCity() { return city; };
 
 	void setStateCode(string newStateCode) { stateCode = newStateCode; };
 
-	string getStateCode() { return stateCode; };
+	const string getStateCode() { return stateCode; };
 
 	void setCounty(string newCounty) { county = newCounty; };
 
-	string getCounty() { return county; };
+	const string getCounty() { return county; };
 
 	void setLat(float newLat) { lat = newLat; };
 
-	float getLat() { return lat; };
+	const float getLat() { return lat; };
 
 	void setLon(float newLon) { lon = newLon; };
 
-	float getLon() { return lon; };
+	const float getLon() { return lon; };
 
 	void print() {
 		cout << "\nZip Code:" << to_string(num) << ", City: " << city << ", County: " << county 

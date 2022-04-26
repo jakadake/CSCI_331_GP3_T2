@@ -28,7 +28,7 @@ public:
 	/*
 	* @brief search function
 	* @pre Takes an integer ZIP to search through the index 
-	* @post Returns the block number that would contain this zip
+	* @post Returns the block number that would contain this zip as an int
 	*/
 	int search(int zip); 
 
@@ -49,6 +49,4 @@ public:
 private:
 
 	vector<indexElement> index;
-
-
 };

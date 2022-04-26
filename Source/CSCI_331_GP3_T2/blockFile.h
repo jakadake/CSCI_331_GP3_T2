@@ -57,6 +57,13 @@ public:
 	*/
 	void writeHeader();
 
+	/**
+	* @brief physical dump function
+	* @pre
+	* @post
+	*/
+	void dump;
+
 private:
 
 

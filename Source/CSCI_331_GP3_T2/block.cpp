@@ -2,6 +2,7 @@
 *block.cpp
 */
 #include "block.h"
+#include "blockBuf.h"
 
 block::block(){
 	active = 0;
@@ -44,7 +45,8 @@ block::block(block& b1, block& b2) {
 	active = true;
 	this->recCount = b1.recCount + b2.recCount;
 	this->currentSize = b1.currentSize + b2.currentSize;
-
+	this->prev = b1.prev;
+	this->next = b2.next;
 }
 
 bool block::addRecord(zip& newzip){
@@ -106,13 +108,19 @@ int block::getSize(zip zipper){
 	return count;
 }
 
+void block::getRecords(vector<zip>& rtn){
+	for (int i = 0; i < records.size(); i++) {
+		rtn[i] = records[i];
+	}
+}
+
 bool block::getZip(zip& rtn, int target){
 	for(int i = 0; i < records.size(); i++){
 		if(records[i].getNum() == target){
 			rtn.setNum(records[i].getNum());
 			rtn.setCity(records[i].getCity());
 			rtn.setStateCode(records[i].getStateCode());
-			rtn.setCounty(records[i].getCount());
+			rtn.setCounty(records[i].getCounty());
 			rtn.setLon(records[i].getLon());
 			rtn.setLat(records[i].getLat());
 			return true;
@@ -120,3 +128,46 @@ bool block::getZip(zip& rtn, int target){
 	}
 	return false;
 }
+
+string block::ldump() {
+
+	recBuf rec;
+	string temp = "", rtn = "";
+
+	rtn.append("active? ");
+	if (active)
+		rtn.append("TRUE\n");
+	else
+		rtn.append("FALSE\n");
+
+	rtn.append("Previous Block Number: ");
+	rtn.append(to_string(prev));
+	rtn.push_back('\n');
+
+	rtn.append("Next Block Number: ");
+	rtn.append(to_string(next));
+	rtn.push_back('\n');
+
+	rtn.append("Highest Zip: ");
+	rtn.append(to_string(highestZip));
+	rtn.push_back('\n');
+
+	rtn.append("Record Count: ");
+	rtn.append(to_string(recCount));
+	rtn.push_back('\n');
+
+	rtn.append("Current Size: ");
+	rtn.append(to_string(currentSize));
+	rtn.push_back('\n');
+
+	for (int i = 0; i < records.size(); i++) {
+		rec.pack(records[i]);
+		rec.write(temp);
+		rtn.append(temp);
+		rec.clear();
+		temp = "";
+	}
+	return rtn;
+}
+
+string block::pdump() {blockBuf b; b.pack(*this); return b.getText();}

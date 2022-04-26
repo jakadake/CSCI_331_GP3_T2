@@ -35,6 +35,8 @@ stale flag
 #include <iostream>
 using namespace std;
 
+void physicalDump(const &blockFile b);
+void logicalDump(const &block b);
 
 
 const string manual =
@@ -60,14 +62,21 @@ int main(int argc, char* argv[]) {
 		cout << argv[i] << ' ';
 	}
 
-	if (argc != 3) {
+	/*if (argc != 3) {
 		cout << "Invalid Input" << endl << manual;
 		return -1;
-	}
+	}*/
 
 	arg1 = argv[1];
 	arg2 = argv[2];
 
+	if (arg1 == "-pd") { // phyisical order dump
+		physicalDump();
+	}
+
+	if (arg1 == "-ld") { // logical order dump
+		logicalDump();
+	}
 
 	if (arg1 == "-r") {	// read file into memory
 
@@ -198,4 +207,16 @@ int main(int argc, char* argv[]) {
 	inFile.close();
 
 	return 1;
+}
+
+
+
+void physicalDump(const &blockFile b) {
+	b.dump();
+
+}
+
+void logicalDump(const &block b) {
+	b.dump();
+
 }

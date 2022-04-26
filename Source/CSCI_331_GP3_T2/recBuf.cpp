@@ -1,12 +1,22 @@
 /*
-* recbuf.cpp
+* recBuf.cpp
 */
 
 #include "recBuf.h"
 
 
-void recBuf::pack(const zip&){
-	buf.append(field);
+void recBuf::pack(zip& z) {
+	buf.append(to_string(z.getNum()));
+	buf.push_back(',');
+	buf.append(z.getCity());
+	buf.push_back(',');
+	buf.append(z.getStateCode());
+	buf.push_back(',');
+	buf.append(z.getCounty());
+	buf.push_back(',');
+	buf.append(to_string(z.getLat()));
+	buf.push_back(',');
+	buf.append(to_string(z.getLon())); // get long
 }
 
 void recBuf::read(const string& recText) {
@@ -15,16 +25,20 @@ void recBuf::read(const string& recText) {
 
 }
 
-void recBuf::write(const string& blockText, int offset){
-
+void recBuf::write(string& blockText){
+	blockText.append(buf);
+	buf = "";
 }
 
 bool recBuf::unpack(zip& z) {
-	/*while ( buf[index] != '\n' && buf[index] != ',') {
-		field.push_back(buf[i++]);
-	}*/
-	size = atoi(buf[0]) * 10 + atoi(buf[1]);
-	string temp = "";
+	
+	string temp = buf[0];
+	temp.push_back(buf[1]);
+	int size = stoi(temp);
+	temp = "";
+
+	index = 0;
+
 	int fieldNumber = 0;
 
 	if (index != size && size != 0) { // execute only when buf is not empty
@@ -39,16 +53,15 @@ bool recBuf::unpack(zip& z) {
 				case 3: z.setStateCode(temp); break;
 				case 4: z.setCounty(temp); break;
 				case 5: z.setLat(stof(temp)); break;
-				case 6: z.setLon(stof(temp)); break;
+				default: z.setLon(stof(temp)); break;
 
 				}
 				fieldNumber++;
 				temp = "";
 			}
 		}
-
-	}
 	return true;
+	}
 
-	//return false;
+	return false;
 }

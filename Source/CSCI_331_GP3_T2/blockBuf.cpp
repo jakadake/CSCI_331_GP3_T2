@@ -16,7 +16,24 @@ void blockBuf::read(fstream& inFile, int RBN) {
 	}
 }
 
-void blockBuf::pack(const block &b ){
+void blockBuf::pack(block &b){
+
+	recBuf rec;
+	vector<zip> records;
+
+	// store block attributes as ascii
+	blockText.append(to_string(b.getPrev()));
+	blockText.append(to_string(b.getNext()));
+	blockText.append(to_string(b.getRecCount()));
+	blockText.append(to_string(b.getCurrentSize()));
+	blockText.append(to_string(b.getHighestZip()));
+
+	//Store records
+	b.getRecords(records);
+	for(int i = 0; i < records.size(); i++){
+		rec.pack(records[i]);
+		rec.write(blockText);
+	}
 
 }
 
@@ -25,12 +42,66 @@ void blockBuf::write(fstream& outfile, int RBN){
 	for (int i = 0; i < blockText.size(); i++) {
 		outfile << blockText[i];
 	}
+	outfile.flush();
 }
 
 
 void blockBuf::unpack(block& b) {
-	recBuf rec;
-	int prev, next, recCount, currentSize, highestZip;
 
+	readHeader(b);
+
+	zip tempZip;
+	string temp;
+	recBuf rec;
+	int recSize;
+	int count;
+
+	while (index != blockText.size()) {
+		temp = blockText[index++];
+		temp.push_back(blockText[index++]);
+		recSize = stoi(temp);
+		while (index != blockText.size() && count != recSize) {
+			temp.push_back(blockText[index++]);
+			count++;
+		}
+		rec.read(temp);
+		rec.unpack(tempZip);
+
+		b.addRecord(tempZip);
+
+	}
+}
+
+
+void blockBuf::readHeader(block& b)
+{
+	index = 0;
+	string temp;
+
+	temp = blockText[index++];
+	temp.push_back(blockText[index++]);
+
+	b.setPrev(stoi(temp));
+
+	temp = blockText[index++];
+	temp.push_back(blockText[index++]);
+
+	b.setNext(stoi(temp));
+
+	temp = blockText[index++];
+	temp.push_back(blockText[index++]);
+
+	b.setRecCount(stoi(temp));
+
+	temp = blockText[index++];
+	temp.push_back(blockText[index++]);
+
+	b.setCurrentSize(blockText[index++]);
+
+	temp = blockText[index++];
+	temp.push_back(blockText[index++]);
+
+	b.setHighestZip(stoi(temp));
 	
+	index++;
 }

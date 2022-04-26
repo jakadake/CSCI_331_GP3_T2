@@ -20,43 +20,52 @@ const int SIZE = 512;
 class blockBuf {
 public:
 	/*
-	* @brief
-	* @pre
-	* @post
+	* @brief Default Constructor.
 	*/
 	blockBuf();
 
 
 	/*
-	* @brief
-	* @pre
-	* @post
+	* @brief Reads from the file a specific block. 
+	* @pre Takes the file to be read from and the relative block number for a specific block.   
+	* @post BlockText is built with a block.
 	*/
 	void read(fstream& infile, int RBN);
 
 	/*
-	* @brief translates block object into text
-	* @pre
-	* @post
+	* @brief Translates block object into text.
+	* @pre Receives a block object.
+	* @post BlockText is built with a block.
 	*/
-	void pack(const block& b);
+	void pack(block& b);
 
 	/*
-	* @brief writes blocktext to the file at the indicated RBN
-	* @pre
-	* @post
+	* @brief Writes blocktext to the file at the indicated RBN.
+	* @pre Receves a file to be written to and relative block number for position.  
 	*/
 	void write(fstream& outfile, int RBN);
 
 	/*
-	* @brief translates text into a block object
-	* @pre
-	* @post
+	* @brief Translates text into a block object.
+	* @pre Receive an empty block object.
+	* @post The blockText string is put into a block object. 
 	*/
 	void unpack(block& b);
 
+	/**
+	* @brief Returns the blockText. 
+	*/
+	string getText() { return blockText; };
+
+
 private:
 
+	/*
+	* @brief Parses the header data of a block object. 
+	* @pre Recieves an empty block object.
+	* @post The header data is stored into the block object.  
+	*/
+	void readHeader(block& b);
 
 	string blockText;
 	block obj;
