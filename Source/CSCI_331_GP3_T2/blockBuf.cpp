@@ -6,7 +6,7 @@
 #include "recBuf.h"
 
 
-void blockBuf::read(fstream& inFile, int RBN) {
+void blockBuf::read(ifstream& inFile, int RBN) {
 	
 	int index = 0;
 	inFile.seekg(RBN*512);
@@ -38,7 +38,7 @@ void blockBuf::pack(block &b){
 }
 
 
-void blockBuf::write(fstream& outfile, int RBN){
+void blockBuf::write(ofstream& outfile, int RBN){
 	for (int i = 0; i < blockText.size(); i++) {
 		outfile << blockText[i];
 	}

@@ -16,6 +16,12 @@ using namespace std;
 static const short numStates = 57; // number of possible states/regions
 
 
+void primaryIndex::getIndex(vector<indexElement>& rtn){
+	for (int i = 0; i < index.size(); i++) {
+		rtn[i].zip = index[i].zip;
+		rtn[i].offset = index[i].offset;
+	}
+}
 /*
 * @brief Adds the zip code and byte offset to the primaryindex class.    
 * @param1 z an integer containing the zipcode.

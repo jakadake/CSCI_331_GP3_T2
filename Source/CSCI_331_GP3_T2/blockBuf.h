@@ -30,7 +30,7 @@ public:
 	* @pre Takes the file to be read from and the relative block number for a specific block.   
 	* @post BlockText is built with a block.
 	*/
-	void read(fstream& infile, int RBN);
+	void read(ifstream& infile, int RBN);
 
 	/*
 	* @brief Translates block object into text.
@@ -43,7 +43,7 @@ public:
 	* @brief Writes blocktext to the file at the indicated RBN.
 	* @pre Receves a file to be written to and relative block number for position.  
 	*/
-	void write(fstream& outfile, int RBN);
+	void write(ofstream& outfile, int RBN);
 
 	/*
 	* @brief Translates text into a block object.
@@ -56,6 +56,15 @@ public:
 	* @brief Returns the blockText. 
 	*/
 	string getText() { return blockText; };
+
+	/**
+	* @brief
+	* @pre
+	* @post
+	*/
+
+	void clear() { blockText.clear(); index = 0; };
+
 
 
 private:

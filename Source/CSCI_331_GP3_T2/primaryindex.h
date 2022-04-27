@@ -38,6 +38,10 @@ public:
 
 	void readCSV(ifstream&);
 
+	void getIndex(vector<indexElement>& rtn);
+
+	int getOffset(int i) { return index[i].offset; };
+
 private:
 
 	string printTable(vector<vector<zip>>&); // output data table

@@ -55,7 +55,7 @@ bool block::addRecord(zip& newzip){
 	if (count + currentSize < 512) {
 		currentSize += count;
 		
-		for(int i = 0; i < records.size(); i++){
+		for(int i = 0; i <= records.size(); i++){
 			if (newzip.getNum() > records[i].getNum()) {
 				records.insert(records.begin() + i, newzip);
 			}
@@ -67,6 +67,24 @@ bool block::addRecord(zip& newzip){
 	else
 		return false;
 
+}
+
+void block::split(block& newBlock){
+	
+	int change = 0;
+	int start = (records.size() / 2);
+
+	for(int i = start; i < records.size(); i++){
+		newBlock.addRecord(records(i));
+		change++;
+	}
+
+	for(int j = 0; j < change; j++){
+		delRecord(records(start).getNum());
+	}
+
+	findHighestZip();
+	newBlock.findHighestZip();
 }
 
 bool block::delRecord(int zip){

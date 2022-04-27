@@ -38,6 +38,13 @@ public:
 	bool delRecord(int zip);
 
 	/*
+	* @brief block split function
+	* @pre a calling block to be split and a new block to be split to
+	* @post halves the block into two blocks
+	*/
+	void split(block& newBlock);
+
+	/*
 	* @brief Gives the next block in the list. 
 	* @post Returns the next block index.
 	*/
@@ -81,8 +88,8 @@ public:
 
 	/*
 	* @brief searches the block for a zip and returns the record
-	* @pre
-	* @post
+	* @pre A zip code to search for and a zip code object to be overwritten   
+	* @post A boolean value that returns true if the target is found 
 	*/
 	bool getZip(zip& rtn, int target);
 
@@ -134,6 +141,8 @@ public:
 	* @post
 	*/
 	string pdump();
+
+	
 
 private:
 

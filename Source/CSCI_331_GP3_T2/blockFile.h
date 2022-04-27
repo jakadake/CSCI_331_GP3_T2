@@ -6,6 +6,8 @@
 #include "zip.h"
 #include "block.h"
 #include "blockIndex.h"
+#include "LIBuffer.h"
+#include "primaryindex.h"
 
 const int SIZE = 512;
 
@@ -23,10 +25,10 @@ public:
 
 	/*
 	* @brief length indicated to block function
-	* @pre
+	* @pre 
 	* @post
 	*/
-	void liToBlock();
+	void liToBlock(string index, string lidata);
 
 
 	/**
@@ -34,14 +36,14 @@ public:
 	* @pre
 	* @post
 	*/
-	void open(string filename) { data.open(filename); };
+	void open(string filename) { iData.open(filename); oData.open(filename);};
 
 	/**
 	* @brief
 	* @pre
 	* @post
 	*/
-	void close() { data.close(); };
+	void close() { iData.close(); oData.close(); };
 
 	/*
 	* @brief read header function
@@ -62,15 +64,30 @@ public:
 	* @pre
 	* @post
 	*/
-	void dump;
+	void dump();
+
+	/**
+	* @brief
+	* @pre
+	* @post
+	*/
+	bool split(block& b);
+
+	/**
+	* @brief
+	* @pre
+	* @post
+	*/
+	void addRecord(zip& z, blockBuf &b);
 
 private:
 
 
 	int first, avail, numBlocks, recCount;
 
-	fstream data;
+	//istream in;
+	ofstream oData;
+	ifstream iData;
 	blockBuf buf;
 	blockIndex index;
-
 };
