@@ -40,9 +40,9 @@ int findHighest(){
 	} 
 
 	for(int i = 0; i < index.size(); i++){
-		if(index(i).zip > tempZip){
-			tempZip = index(i).zip;
-			tempRBN = index(i).RBN;
+		if(index[i].zip > tempZip){
+			tempZip = index[i].zip;
+			tempRBN = index[i].RBN;
 		} 
 	}
 

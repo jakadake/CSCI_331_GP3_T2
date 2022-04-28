@@ -7,7 +7,7 @@
 block::block(){
 	active = 0;
 	recCount = 0;
-	currentSize = 0; 
+	currentSize = 20; 
 	highestZip = 0;
 	prev = 0; 
 	next = 0;
@@ -52,8 +52,8 @@ block::block(block& b1, block& b2) {
 bool block::addRecord(zip& newzip){
 
 	int count = getSize(newzip);
-	if (count + currentSize < 512) {
-		currentSize += count;
+	if (count + currentSize + 2 < 512) {
+		currentSize += (count + 2);
 		
 		for(int i = 0; i <= records.size(); i++){
 			if (newzip.getNum() > records[i].getNum()) {
@@ -94,7 +94,7 @@ bool block::delRecord(int zip){
 			records.erase(records.begin() + i);
 			int count = getSize(records[i]);
 			recCount--;
-			currentSize -= count;
+			currentSize -= (count + 2);
 			findHighestZip();
 			if (currentSize == 0)
 				active = false;

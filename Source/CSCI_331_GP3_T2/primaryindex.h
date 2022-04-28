@@ -22,9 +22,8 @@ struct indexElement {
 
 class primaryIndex {
 public:
-	primaryIndex();	
 
-	primaryIndex(string iFileName, string dFileName) { iFile.open(iFileName); dFile.open(dFileName); readIndex(); iFile.close(); dFile.close(); }
+	primaryIndex(string iFileName = "IndexFile.index", string dFileName = "DataFile.licsv") { iFile.open(iFileName); dFile.open(dFileName); readIndex(); iFile.close(); dFile.close(); }
 
 	primaryIndex(ifstream& infile) { readCSV(infile); }
 
@@ -39,6 +38,8 @@ public:
 	void readCSV(ifstream&);
 
 	void getIndex(vector<indexElement>& rtn);
+
+	int getSize() { return index.size(); }
 
 	int getOffset(int i) { return index[i].offset; };
 

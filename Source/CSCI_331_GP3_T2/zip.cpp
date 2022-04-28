@@ -42,3 +42,14 @@ zip::zip(const zip& oldZip)
 	lat = oldZip.lat;
 	lon = oldZip.lon;
 }
+
+const int zip::getSize() {
+	string size = "";
+	size.append(to_string(num));
+	size.append(to_string(city));
+	size.append(to_string(stateCode));
+	size.append(to_string(county));
+	size.append(to_string(lat));
+	size.append(to_string(long));
+	return size.size();
+}

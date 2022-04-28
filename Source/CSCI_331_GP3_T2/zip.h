@@ -64,13 +64,14 @@ public:
 
 	const float getLon() { return lon; };
 
+	const int getSize();
+
 	void print() {
 		cout << "\nZip Code:" << to_string(num) << ", City: " << city << ", County: " << county 
 			<< ", stateCode: " << stateCode << ", Lat: " << to_string(lat) << ", Lon: " << to_string(lon) << "\n";
 	}
  
 private:
-	int size;
 	int num;
 	float lat;
 	float lon;

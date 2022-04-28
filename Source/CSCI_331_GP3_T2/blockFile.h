@@ -25,7 +25,7 @@ public:
 
 	/*
 	* @brief length indicated to block function
-	* @pre 
+	* @pre takes a string index and LI  
 	* @post
 	*/
 	void liToBlock(string index, string lidata);
@@ -57,7 +57,7 @@ public:
 	* @pre 
 	* @post
 	*/
-	void writeHeader();
+	string writeHeader();
 
 	/**
 	* @brief physical dump function
@@ -67,25 +67,43 @@ public:
 	void dump();
 
 	/**
-	* @brief
+	* @brief split function
 	* @pre
 	* @post
 	*/
 	bool split(block& b);
 
 	/**
-	* @brief
+	* @brief add record function
 	* @pre
 	* @post
 	*/
-	void addRecord(zip& z, blockBuf &b);
+	bool addRecord(zip& z);
+
+	/**
+	* @brief delete record function
+	* @pre
+	* @post
+	*/
+	bool delRecord(string zip);
+
+	/**
+	* @brief get first function 
+	* @post returns the first RBN as a zip 
+	*/
+	int getFirst() { return first; };
+
+	/**
+	* @brief get avail function 
+	* @post returns 
+	*/
+	int getAvail() { return avail; };
 
 private:
 
 
 	int first, avail, numBlocks, recCount;
 
-	//istream in;
 	ofstream oData;
 	ifstream iData;
 	blockBuf buf;

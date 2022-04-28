@@ -6,6 +6,8 @@
 
 
 void recBuf::pack(zip& z) {
+
+	buf.append(to_string(z.getSize()));
 	buf.append(to_string(z.getNum()));
 	buf.push_back(',');
 	buf.append(z.getCity());
@@ -26,6 +28,7 @@ void recBuf::read(const string& recText) {
 }
 
 void recBuf::write(string& blockText){
+
 	blockText.append(buf);
 	buf = "";
 }

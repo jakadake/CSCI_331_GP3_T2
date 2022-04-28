@@ -31,6 +31,8 @@ stale flag
 #include "delimBuffer.h"
 #include "LIBuffer.h"
 #include "zip.h"
+#include "blockFile.h" 
+#include "recBuf.h"
 #include <vector>
 #include <iostream>
 using namespace std;
@@ -57,6 +59,8 @@ int main(int argc, char* argv[]) {
 	unsigned long offset = 0;
 	LIBuffer indicated;
 	string arg1, arg2;
+	recBuf rec;
+	zip z;
 
 	for (int i = 0; i < argc; i++) {
 		cout << argv[i] << ' ';
@@ -74,11 +78,33 @@ int main(int argc, char* argv[]) {
 		physicalDump();
 	}
 
-	if (arg1 == "-ld") { // logical order dump
+	else if (arg1 == "-ld") { // logical order dump
 		logicalDump();
 	}
+	else if(arg1 == "-b"){
+		blockFile b;
+	}
+	else if(arg1 == "-a"){ //add a record
 
-	if (arg1 == "-r") {	// read file into memory
+		blockFile b;
+		rec.read(arg2);
+		rec.unpack(z);
+
+		if (b.addRecord(z))
+			cout << "Record added successfully\n";
+		else
+			cout << "Failed to add record\n";
+	}
+	else if(arg1 == "-d"){ //delete a record
+
+		blockFile b;
+		if(b.delRecord(arg2))
+			cout << "Record deleted successfully\n"
+		else
+			cout << "Failed to delete record\n";
+	}
+
+	else if(arg1 == "-r") {	// read file into memory
 
 		char response;
 		int zipResponse;
@@ -211,12 +237,12 @@ int main(int argc, char* argv[]) {
 
 
 
-void physicalDump(const &blockFile b) {
+void physicalDump(const blockFile& b) {
 	b.dump();
 
 }
 
-void logicalDump(const &block b) {
+void logicalDump(const blockFile& b) {
 	b.dump();
 
 }

@@ -2,68 +2,108 @@
 
 #include "blockFile.h"
 
+
+
 blockFile::blockFile(string index = "IndexFile.index", string data = "DataFile.licsv") {
 	liToBlock(index, data); // dtatata
 
 
 }
 
-void blockFile::liToBlock(string index, string liData) {
+
+void blockFile::liToBlock(string in, string liData) {
 
 	recBuf recParser; // parse LI records onto zip object 
+	LIBuffer libuf;
 	zip z;
-	blockBuf b;
-	ifstream ind; 
-	ind.open(index);
-	ifstream lid;
-	lid.open(liData);
+	primaryIndex pi(in, liData);
 
+	vector<indexElement> ind;
+	pi.getIndex(ind);
+
+	fstream lid;
+	lid.open(liData);
 
 	oData.open("DataFile.bli");
 
-	int size;
-	string s;
-	char character;
-	for (int i = 0; i < 3; ++i) {
-		getline(lid, s); // skipping header. How many lines? ..
-	}
-	s = "";
-
-	while(!lid.eof()) {
-		size = atoi(get(lid)) * 10;
-		size += atoi(get(lid));
-		for (int i = 0; i < size; ++i) {
-			lid >> character;
-			s.push_back(character);
-		}
-		recParser.read(s);
+	for (int i = 0; i < ind.size(); i++) {
+		libuf.read(lid, ind[i].offset);
+		recParser.read(libuf.getBuffer());
 		recParser.unpack(z);
-		++recCount;
-		addRecord(z, b);
-
-		s = "";
-	} 
-
+		addRecord(z);
+	}
 }
 
-void blockFile::addRecord(zip& z, blockBuf &b) {
-	int rbn = index.search(z.getNum())
+bool blockFile::delRecord(string zip){
+
+	block temp;
+	int rbn = index.search(zip);
+	if (rbn == 0)
+		return false;
+	else{
+		buf.read(oData, rbn);
+		buf.pack(temp);
+		if (temp.delRecord(zip))
+			return true;
+		else
+			return false;
+
+	}
+}
+
+bool blockFile::addRecord(zip& z) {
+
+	block temp1, temp2;
+	int rbn = index.search(z.getNum());
+
 	if (rbn == 0) {
 		rbn = index.findHighest();
 		if (rbn == 0) {
-			block first;
-			first.addRecord(z);
-			first.prev = 0;
-			first.next = 0;
-			index.add(first, 1);
-		}
-		else{
+			temp1.addRecord(z);
+			temp1.setPrev(0);
+			temp1.setNext(0);
+			index.add(temp1, 1);
 
+			buf.pack(temp1);
+			buf.write(oData, 1);
+			buf.clear();
+			return true;
+		}
+		else {
+			
+			buf.read(iData, rbn);
+			buf.unpack(temp1);
+			buf.clear();
+			if (!temp1.addRecord(z)) {
+				split(temp1);
+				addRecord(z);
+			}
+			else {
+				buf.pack(temp1);
+				buf.write(oData, rbn);
+				buf.clear();
+				return true;
+			}
 		}
 	}
 	else {
-		
+		buf.read(iData, rbn);
+		buf.unpack(temp1);
+		buf.clear();
+
+		if (!temp1.addRecord(z)) {
+			split(temp1);
+			addRecord(z);
+		}
+		else {
+			index.add(temp1, rbn);
+			buf.pack(temp1);
+			buf.write(oData, rbn);
+			buf.clear();
+			return true;
+		}
 	}
+	return false;
 }
 ///asdfasdfasdfasdfakljnsdfasdjf; fsadfasdfasfdasdfasdfasdfasdfasdfoja; asodfi; lfija; sodfjia; sldfij; akls j  as; dfj; djf; alskdjf; alksjdf;/ alksjdfsaodsd ofij   oas dj
 
@@ -71,18 +111,17 @@ void blockFile::addRecord(zip& z, blockBuf &b) {
 void blockFile::readHeader() {
 
 	string temp;
-	data.seekg(0);
+	iData.seekg(0);
 
 	for (int i = 0; i < 512; i++) {
-		temp.push_back(data.get());
+		temp.push_back(iData.get());
 	}
 
 
 
 }
 
-
-void blockFile::writeHeader() {
+string blockFile::writeHeader() {
 
 	string header;
 
@@ -112,19 +151,19 @@ void blockFile::writeHeader() {
 
 	//record count
 	header.append("Record Count: ");
-	header.append(recCount);
-	header.push_back("\n");
+	header.append(to_string(recCount));
+	header.push_back('\n');
 
 	//block count
 	header.append("Block Count: ");
-	header.append(numBlock);
-	header.push_back("\n");
+	header.append(to_string(numBlocks));
+	header.push_back('\n');
 
 	//Fields per record
 	header.append("Fields: 6\n");
 
 	//Fields
-	header.append("ZipCode, Place Name, State, County, Lat, Long\n")
+	header.append("ZipCode, Place Name, State, County, Lat, Long\n");
 	
 	//Type Schema
 	header.append("Type Schema: Zip Code is an integer. Lon and Lat are floating point decimals. County, State Code, and City are strings.\n");
@@ -133,18 +172,43 @@ void blockFile::writeHeader() {
 	header.append("Zip code is the first key\n");
 
 	//RBN link to avail list
+	header.append("First Available Block: ");
+	header.append(to_string(avail));
+	header.push_back('\n');
 
 	//RBN link to active list
+	header.append("First Active Block: ");
+	header.append(to_string(first)); //heerad
+	header.push_back('\n');
 
 	//Stale flag
+	header.append("Stale: true");
+	header.push_back('\n');
 
+	return header;
 }
 
-void blockFile::dump()
+
+void blockFile::dump() // physical dump??
 {
-	
+	cout << "List Head: " << getFirst() << endl
+		<< "Avail Head: " << getAvail() << endl;
+	for (int i = 1; i <= numBlocks; ++i) {
+		buf.read(iData, i);
+		cout << i << ' ';
+		if (buf.obj.getCurrentSize() == 0) {
+			cout << "\t*Available"
+		}
+		else {
+			for (int j = 0; j < buf.obj.getCurrentSize(); ++j) {
+				cout << buf.obj.records[j] << ' ';
+			}
+		}
+
+	}
 
 }
+
 
 bool blockFile::split(block& b)
 {
