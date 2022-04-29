@@ -21,6 +21,7 @@
   <ItemGroup>
     <None Include="allstates.csv" />
     <None Include="columnchange.csv" />
+    <None Include="DataFile.bli" />
     <None Include="DataFile.licsv" />
     <None Include="IndexFile.index" />
     <None Include="postal_test.csv" />

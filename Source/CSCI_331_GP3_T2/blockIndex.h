@@ -49,7 +49,7 @@ public:
 	* @pre adds the first parameter as a zip and second as a RBN onto the back of the index
 	* @post returns void
 	*/
-	void add(block b, int r); 
+	void add(block& b, int r); 
 	
 	/*
 	* @brief delete function

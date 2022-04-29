@@ -5,10 +5,18 @@
 
 
 blockFile::blockFile() {
+
 	string index = "IndexFile.index"; 
 	string data = "DataFile.licsv";
-	liToBlock(index, data); // dtatata
 
+	oData.open("DataFile.bli");
+	iData.open("DataFile.bli");
+
+	for (int i = 0; i < 1024; i++) {
+		oData << '0';
+	}
+
+	liToBlock(index, data); // dtatata
 
 }
 
@@ -26,14 +34,18 @@ void blockFile::liToBlock(string in, string liData) {
 	fstream lid;
 	lid.open(liData);
 
-	oData.open("DataFile.bli");
+	
 
 	for (int i = 0; i < ind.size(); i++) {
+
 		libuf.read(lid, ind[i].offset);
 		recParser.read(libuf.getBuffer());
 		recParser.unpack(z);
+
 		addRecord(z);
+
 	}
+	writeHeader();
 }
 
 bool blockFile::delRecord(string zip){
@@ -45,54 +57,72 @@ bool blockFile::delRecord(string zip){
 
 	if (rbn == 0)
 		return false;
+
 	else{
+
 		buf.read(iData, rbn);
 		buf.unpack(temp);
+
 		rbnPrev = temp.getPrev();
 		rbnNext = temp.getNext();
+
 		if (temp.delRecord(stoi(zip))){
 			if(temp.getCurrentSize() < 256){
 				if (rbnPrev != 0) {
+
 					buf.clear();
 					buf.read(iData, rbnPrev);
 					buf.unpack(tempPrev);
+
 				}
 				if(rbnNext != 0){
+
 					buf.clear();
 					buf.read(iData, rbnNext);
 					buf.unpack(tempNext);
-				}
 
+				}
 				if (tempPrev.getCurrentSize() < 256 && temp.getCurrentSize() < 256) {
+
 					block merge(tempPrev, temp);
+
 					index.add(merge, rbnPrev);
 					buf.pack(merge);
 					buf.write(oData, rbnPrev);
+
 					tempNext.setPrev(rbnPrev);
+
 					buf.clear();
 					buf.pack(tempNext);
 					buf.write(oData, rbnNext);
+
 					return true;
 				}
 				
 					
 				if (tempNext.getCurrentSize() < 256 && temp.getCurrentSize() < 256) {
+
 					block merge(temp, tempNext);
+
 					index.add(merge, rbnNext);
 					buf.pack(merge);
 					buf.write(oData, rbnNext);
+
 					tempPrev.setNext(rbnNext);
+
 					buf.clear();
 					buf.pack(tempPrev);
 					buf.write(oData, rbnPrev);
+
 					return true;
 				}	
 			}
+
 			return true;
+
 		}
 		else
 			return false;
-
 	}
 }
 
@@ -102,8 +132,11 @@ bool blockFile::addRecord(zip& z) {
 	int rbn = index.search(z.getNum());
 
 	if (rbn == 0) {
+
 		rbn = index.findHighest();
+
 		if (rbn == 0) {
+
 			temp1.addRecord(z);
 			temp1.setPrev(0);
 			temp1.setNext(0);
@@ -112,6 +145,7 @@ bool blockFile::addRecord(zip& z) {
 			buf.pack(temp1);
 			buf.write(oData, 1);
 			buf.clear();
+
 			return true;
 		}
 		else {
@@ -119,32 +153,41 @@ bool blockFile::addRecord(zip& z) {
 			buf.read(iData, rbn);
 			buf.unpack(temp1);
 			buf.clear();
+
 			if (!temp1.addRecord(z)) {
+
 				split(temp1);
 				addRecord(z);
+
 			}
 			else {
+
 				buf.pack(temp1);
 				buf.write(oData, rbn);
 				buf.clear();
 				return true;
+
 			}
 		}
 	}
 	else {
+
 		buf.read(iData, rbn);
 		buf.unpack(temp1);
 		buf.clear();
 
 		if (!temp1.addRecord(z)) {
+
 			split(temp1);
 			addRecord(z);
 		}
 		else {
+
 			index.add(temp1, rbn);
 			buf.pack(temp1);
 			buf.write(oData, rbn);
 			buf.clear();
+
 			return true;
 		}
 	}
@@ -159,11 +202,10 @@ void blockFile::readHeader() {
 	iData.seekg(0);
 
 	for (int i = 0; i < 512; i++) {
+
 		temp.push_back(iData.get());
+
 	}
-
-
-
 }
 
 string blockFile::writeHeader() {
@@ -296,8 +338,10 @@ string blockFile::ldump(){
 	zips.append("\n");
 
 	for(int i = 1; i <= numBlocks; ++i){
+
 		if (rbn == 0)
 			break; //brek; a
+
 		else{
 
 			buf.read(iData, rbn);
@@ -305,12 +349,14 @@ string blockFile::ldump(){
 			buf.clear();
 
 			if (temp.getActive()) {
+
 				zips.append("RBN Prev: ");
 				zips.append(to_string(temp.getPrev()));
 				zips.push_back(' ');
 				temp.getRecords(records);
 
 				for (int j = 0; j < records.size(); j++) {
+
 					zips.append(to_string(records[j].getNum()));
 					zips.push_back(' ');
 				}
@@ -323,8 +369,8 @@ string blockFile::ldump(){
 			else
 				zips.append("RBN Prev:0\t*AVAILABLE*\tRBN Next: 0\n");
 		}
-
 	}
+
 	return zips;
 }
 
@@ -332,9 +378,11 @@ string blockFile::ldump(){
 bool blockFile::split(block& b)
 {
 	if (b.getActive()) {
+
 		int tempi;
 		block temp1, temp2;
 		b.split(temp1);
+
 		if (avail == 0){
 
 			tempi = b.getNext();
@@ -391,11 +439,9 @@ bool blockFile::split(block& b)
 			buf.write(oData, b.getNext());
 			buf.clear();
 
-
-
 			return true;
 		}
-
 	}
+
 	return false;
 }

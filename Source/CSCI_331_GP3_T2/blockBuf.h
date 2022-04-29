@@ -75,6 +75,13 @@ private:
 	*/
 	void readHeader(block& b);
 
+	/**
+	* @brief
+	* @pre
+	* @post
+	*/
+	string writeHeader(block& b);
+
 	string blockText;
 	block obj;
 	int index;

@@ -36,6 +36,9 @@
     <None Include="DataFile.licsv">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="DataFile.bli">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="primaryindex.h">

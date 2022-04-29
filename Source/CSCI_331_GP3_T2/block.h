@@ -148,7 +148,14 @@ private:
 	* @pre Takes in a zip.
 	* @post Returns the size of the zip object.
 	*/
-	int getSize(zip zipper);
+	int zipSize(zip& zipper);
+
+	/**
+	* @brief
+	* @pre
+	* @post
+	*/
+	int headerSize();
 
 	bool active;
 	int prev, next;

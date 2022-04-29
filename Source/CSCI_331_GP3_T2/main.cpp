@@ -41,6 +41,8 @@ using namespace std;
 const string manual =
 "sample input: programname -r filename.csv\noptions: \n-r <filename.csv>\n-z <zip code> \nprogram must be run once with a csv file to generate the datafile and index";
 
+void addRecord(blockFile& b);
+void delRecord(blockFile& b, string arg);
 
 /*
 * @brief main function that takes command line arguments
@@ -55,9 +57,6 @@ int main(int argc, char* argv[]) {
 	int queryZip;
 	unsigned long offset = 0;
 	LIBuffer indicated;
-	string arg1, arg2;
-	recBuf rec;
-	zip z;
 
 	for (int i = 0; i < argc; i++) {
 		cout << argv[i] << ' ';
@@ -67,42 +66,41 @@ int main(int argc, char* argv[]) {
 		cout << "Invalid Input" << endl << manual;
 		return -1;
 	}*/
-
-	arg1 = argv[1];
-	arg2 = argv[2];
+	string arg2, arg1 = argv[1];
+	if (argc == 3)
+		arg2 = argv[2];
 
 	if (arg1 == "-pd") { // phyisical order dump
+
 		blockFile b;
 		cout << b.pdump();
 	}
 	else if (arg1 == "-ld") { // logical order dump
+
+
 		blockFile b;
 		cout << b.ldump();
+	
 	}
 	else if(arg1 == "-b"){
+
 		blockFile b;
+
+
 	}
 	else if(arg1 == "-a"){ //add a record
 
 		blockFile b;
-		rec.read(arg2);
-		rec.unpack(z);
+		addRecord(b);
 
-		if (b.addRecord(z))
-			cout << "Record added successfully\n";
-		else
-			cout << "Failed to add record\n";
 	}
 	else if(arg1 == "-d"){ //delete a record
 
 		blockFile b;
-		if (b.delRecord(arg2))
-			cout << "Record deleted successfully\n";
-		else
-			cout << "Failed to delete record\n";
-	}
+		delRecord(b, arg2);
 
-	else if(arg1 == "-r") {	// read file into memory
+	}
+	else if(arg1 == "-r") {	// translate delim file to LI, offers to search
 
 		char response;
 		int zipResponse;
@@ -164,8 +162,7 @@ int main(int argc, char* argv[]) {
 
 		return 1;
 	}
-	else if (arg1 == "-z") {	// search for zip
-	
+	else if (argc == 3 && arg1 == "-z") {	// search for zip
 		
 		primaryIndex indexList("IndexFile.index", "DataFile.licsv");
 		queryZip = stoi(arg2);
@@ -212,11 +209,7 @@ int main(int argc, char* argv[]) {
 			}
 		}
 	}
-	else if (arg1 == "-b") {
-		
 
-
-	}
 	else {	// invalid arguments 
 
 		cout << "invalid arguments";
@@ -231,4 +224,51 @@ int main(int argc, char* argv[]) {
 	inFile.close();
 
 	return 1;
+}
+
+void addRecord(blockFile& b){
+
+	zip z;
+	string temporary;
+
+
+	cout << "Zip Code: ";
+	cin >> temporary;
+	z.setNum(stoi(temporary));
+
+	cout << "City: ";
+	cin >> temporary;
+	z.setCity(temporary);
+
+	cout << "State Code: ";
+	cin >> temporary;
+	z.setStateCode(temporary);
+
+	cout << "County: ";
+	cin >> temporary;
+	z.setCounty(temporary);
+
+	cout << "Latitude: ";
+	cin >> temporary;
+	z.setLat(stoi(temporary));
+
+	cout << "Longitude: ";
+	cin >> temporary;
+	z.setLon(stoi(temporary));
+
+	if (b.addRecord(z))
+		cout << "Record added successfully\n";
+	else
+		cout << "Failed to add record\n";
+
+}
+
+void delRecord(blockFile& b, string arg){
+
+
+	if (b.delRecord(arg))
+		cout << "Record deleted successfully\n";
+	else
+		cout << "Failed to delete record\n";
+
 }

@@ -49,7 +49,7 @@ int blockIndex::findHighest(){
 	return tempRBN;
 }
 
-void blockIndex::add(block b, int r) {
+void blockIndex::add( block& b, int r) {
 	bIndexElement temp;
 	temp.zip = b.getHighestZip();
 	temp.RBN = r;

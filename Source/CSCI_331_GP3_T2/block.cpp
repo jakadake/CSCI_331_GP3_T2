@@ -6,7 +6,7 @@
 block::block(){
 	active = 0;
 	recCount = 0;
-	currentSize = 20; 
+	currentSize = headerSize() + 1;
 	highestZip = 0;
 	prev = 0; 
 	next = 0;
@@ -22,7 +22,8 @@ block::block(const block& old){
 	prev = old.prev;
 	next = old.next;
 	for (int i = 0; i < old.records.size(); i++)
-		records[i] = old.records[i];
+
+		records.push_back(old.records[i]);
 
 }
 
@@ -51,17 +52,41 @@ block::block(block& b1, block& b2) {
 
 bool block::addRecord(zip& newzip){
 
-	int count = getSize(newzip);
-	if (count + currentSize + 2 < 512) {
-		currentSize += (count + 2);
+	int tempsize = headerSize();
+
+	int count = zipSize(newzip);
+	if (count + currentSize < 512) {
+		currentSize += count;
 		
-		for(int i = 0; i <= records.size(); i++){
-			if (newzip.getNum() > records[i].getNum()) {
-				records.insert(records.begin() + i, newzip);
-			}
+		if (recCount == 0) {
+			records.push_back(newzip);
+			recCount++;
 		}
-		recCount++;
+		else{
+			if (records.size() == recCount) {
+				bool placed = false;
+				for (int i = 0; i < records.size() && !placed; i++) {
+					if (newzip.getNum() < records[i].getNum()) {
+
+						records.insert(records.begin() + i, newzip);
+						recCount++;
+						placed = true;
+
+					}
+				}
+				if (!placed) {
+					records.push_back(newzip);
+					recCount++;
+				}
+			}
+			else
+				records.push_back(newzip);
+		}
+
 		findHighestZip();
+
+		currentSize = (currentSize - tempsize) + headerSize();
+
 		return true;
 	}
 	else
@@ -92,7 +117,7 @@ bool block::delRecord(int zip){
 	for(int i = 0; i < recCount; i++){
 		if(records[i].getNum() == zip){
 			records.erase(records.begin() + i);
-			int count = getSize(records[i]);
+			int count = zipSize(records[i]);
 			recCount--;
 			currentSize -= (count + 2);
 			findHighestZip();
@@ -114,17 +139,41 @@ int block::findHighestZip(){
 	return highestZip;
 }
 
-int block::getSize(zip zipper){
+int block::zipSize(zip& zipper){
 
-	int count = 0;
-	count += to_string(zipper.getNum()).size();
-	count += (zipper.getCity()).size();
-	count += (zipper.getStateCode()).size();
-	count += (zipper.getCounty()).size();
-	count += to_string(zipper.getLat()).size();
-	count += to_string(zipper.getLon()).size();
+	string size = "";
+	string temp = "";
 
-	return count;
+	temp.append(to_string(zipper.getNum()));
+	size.push_back(',');
+	temp.append(zipper.getCity());
+	size.push_back(',');
+	temp.append(zipper.getStateCode());
+	size.push_back(',');
+	temp.append(zipper.getCounty());
+	size.push_back(',');
+	temp.append(to_string(zipper.getLat()));
+	size.push_back(',');
+	temp.append(to_string(zipper.getLon()));
+
+	size.append(to_string(temp.size()));
+	size.push_back(',');
+	size.append(temp);
+
+	return size.size();
+}
+
+int block::headerSize()
+{
+	string size = "";
+
+	size.append(to_string(prev) + ',');
+	size.append(to_string(next) + ',');
+	size.append(to_string(recCount) + ',');
+	size.append(to_string(currentSize) + ',');
+	size.append(to_string(highestZip) + ';');
+
+	return size.size();
 }
 
 void block::getRecords(vector<zip>& rtn){

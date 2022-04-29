@@ -14,10 +14,14 @@ static const short numStates = 57; // number of possible states/regions
 
 void primaryIndex::getIndex(vector<indexElement>& rtn){
 
+	indexElement temp;
+
 	for (int i = 0; i < index.size(); i++) {
 
-		rtn[i].zip = index[i].zip;
-		rtn[i].offset = index[i].offset;
+		temp.zip = index[i].zip;
+		temp.offset = index[i].offset;
+
+		rtn.push_back(temp);
 
 	}
 }
