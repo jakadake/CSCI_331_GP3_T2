@@ -93,6 +93,13 @@ public:
 	*/
 	bool getZip(zip& rtn, int target);
 
+	/**
+	* @brief
+	* @pre
+	* @post
+	*/
+	void setActive(bool state) { active = state; };
+
 	/*
 	* @brief Sets the next value of the block to a given int  
 	* @pre An int to assign the next value to  
@@ -127,22 +134,6 @@ public:
 	* @post Returns void
 	*/
 	void setHighestZip(int highestZip) { this->highestZip = highestZip; };
-
-	/*
-	* @brief logical dump function
-	* @pre
-	* @post
-	*/
-	string ldump();
-
-	/*
-	* @brief 
-	* @pre
-	* @post
-	*/
-	string pdump();
-
-	
 
 private:
 

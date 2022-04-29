@@ -4,7 +4,9 @@
 
 
 
-blockFile::blockFile(string index = "IndexFile.index", string data = "DataFile.licsv") {
+blockFile::blockFile() {
+	string index = "IndexFile.index"; 
+	string data = "DataFile.licsv";
 	liToBlock(index, data); // dtatata
 
 
@@ -36,15 +38,58 @@ void blockFile::liToBlock(string in, string liData) {
 
 bool blockFile::delRecord(string zip){
 
-	block temp;
-	int rbn = index.search(zip);
+	block temp, tempPrev, tempNext;
+	int rbn = index.search(stoi(zip));
+	int rbnPrev;
+	int rbnNext;
+
 	if (rbn == 0)
 		return false;
 	else{
-		buf.read(oData, rbn);
-		buf.pack(temp);
-		if (temp.delRecord(zip))
+		buf.read(iData, rbn);
+		buf.unpack(temp);
+		rbnPrev = temp.getPrev();
+		rbnNext = temp.getNext();
+		if (temp.delRecord(stoi(zip))){
+			if(temp.getCurrentSize() < 256){
+				if (rbnPrev != 0) {
+					buf.clear();
+					buf.read(iData, rbnPrev);
+					buf.unpack(tempPrev);
+				}
+				if(rbnNext != 0){
+					buf.clear();
+					buf.read(iData, rbnNext);
+					buf.unpack(tempNext);
+				}
+
+				if (tempPrev.getCurrentSize() < 256 && temp.getCurrentSize() < 256) {
+					block merge(tempPrev, temp);
+					index.add(merge, rbnPrev);
+					buf.pack(merge);
+					buf.write(oData, rbnPrev);
+					tempNext.setPrev(rbnPrev);
+					buf.clear();
+					buf.pack(tempNext);
+					buf.write(oData, rbnNext);
+					return true;
+				}
+				
+					
+				if (tempNext.getCurrentSize() < 256 && temp.getCurrentSize() < 256) {
+					block merge(temp, tempNext);
+					index.add(merge, rbnNext);
+					buf.pack(merge);
+					buf.write(oData, rbnNext);
+					tempPrev.setNext(rbnNext);
+					buf.clear();
+					buf.pack(tempPrev);
+					buf.write(oData, rbnPrev);
+					return true;
+				}	
+			}
 			return true;
+		}
 		else
 			return false;
 
@@ -189,24 +234,98 @@ string blockFile::writeHeader() {
 }
 
 
-void blockFile::dump() // physical dump??
+string blockFile::pdump() // physical dump??
 {
-	cout << "List Head: " << getFirst() << endl
-		<< "Avail Head: " << getAvail() << endl;
+	string out = "";
+	out.append("List Head: ");
+	out.append(to_string(getFirst()));
+	out.append("\nAvail Head: ");
+	out.append(to_string(getAvail()));
+	out.append("\n");
+	
+	block temp;
+	vector<zip> records;
+
 	for (int i = 1; i <= numBlocks; ++i) {
+
 		buf.read(iData, i);
-		cout << i << ' ';
-		if (buf.obj.getCurrentSize() == 0) {
-			cout << "\t*Available"
+		buf.unpack(temp);
+		buf.clear();
+
+		if (temp.getActive()) {
+
+			out.append("RBN Prev: ");
+			out.append(to_string(temp.getPrev()));
+			temp.getRecords(records);
+
+			for(int j = 0; j < temp.getRecCount(); j++){
+
+				out.push_back(' ');
+				out.append(to_string(records[j].getNum()));
+				out.push_back(' ');
+
+			}
+
+			out.append("RBN Next: ");
+			out.append(to_string(temp.getNext()));
+			out.append("\n");
+
 		}
 		else {
-			for (int j = 0; j < buf.obj.getCurrentSize(); ++j) {
-				cout << buf.obj.records[j] << ' ';
-			}
+
+			out.append("RBN Prev:0\t*AVAILABLE*\tRBN Next: 0\n");
+
 		}
 
 	}
 
+	return out;
+}
+
+string blockFile::ldump(){
+
+	int rbn = 1;
+	block temp;
+	string zips;
+	vector<zip> records;
+
+	zips.append("List Head: ");
+	zips.append(to_string(getFirst()));
+	zips.append("\nAvail Head: ");
+	zips.append(to_string(getAvail()));
+	zips.append("\n");
+
+	for(int i = 1; i <= numBlocks; ++i){
+		if (rbn == 0)
+			break; //brek; a
+		else{
+
+			buf.read(iData, rbn);
+			buf.unpack(temp);
+			buf.clear();
+
+			if (temp.getActive()) {
+				zips.append("RBN Prev: ");
+				zips.append(to_string(temp.getPrev()));
+				zips.push_back(' ');
+				temp.getRecords(records);
+
+				for (int j = 0; j < records.size(); j++) {
+					zips.append(to_string(records[j].getNum()));
+					zips.push_back(' ');
+				}
+
+				zips.append("RBN Prev: ");
+				zips.append(to_string(temp.getNext()));
+				zips.push_back('\n');
+				rbn = temp.getNext();
+			}
+			else
+				zips.append("RBN Prev:0\t*AVAILABLE*\tRBN Next: 0\n");
+		}
+
+	}
+	return zips;
 }
 
 
@@ -227,16 +346,17 @@ bool blockFile::split(block& b)
 
 			temp1.setPrev(temp2.getNext());
 			temp1.setNext(tempi);
+			temp1.setActive(true);
 
 			buf.pack(b);
 			buf.write(oData, tempi);
 			buf.clear();
-			index.add(b.getHighestZip(), tempi);
+			index.add(b, tempi);
 
 			buf.pack(temp1);
 			buf.write(oData, numBlocks);
 			buf.clear();
-			index.add(temp1.getHighestZip(), numBlocks);
+			index.add(temp1, numBlocks);
 
 			return true;
 		}
@@ -261,6 +381,7 @@ bool blockFile::split(block& b)
 			buf.clear();
 
 			temp1.setPrev(temp2.getNext());
+			temp1.setActive(true);
 
 			buf.pack(b);
 			buf.write(oData, temp2.getNext());
@@ -269,6 +390,8 @@ bool blockFile::split(block& b)
 			buf.pack(temp1);
 			buf.write(oData, b.getNext());
 			buf.clear();
+
+
 
 			return true;
 		}

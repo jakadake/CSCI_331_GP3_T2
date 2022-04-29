@@ -37,9 +37,6 @@ stale flag
 #include <iostream>
 using namespace std;
 
-void physicalDump(const &blockFile b);
-void logicalDump(const &block b);
-
 
 const string manual =
 "sample input: programname -r filename.csv\noptions: \n-r <filename.csv>\n-z <zip code> \nprogram must be run once with a csv file to generate the datafile and index";
@@ -75,11 +72,12 @@ int main(int argc, char* argv[]) {
 	arg2 = argv[2];
 
 	if (arg1 == "-pd") { // phyisical order dump
-		physicalDump();
+		blockFile b;
+		cout << b.pdump();
 	}
-
 	else if (arg1 == "-ld") { // logical order dump
-		logicalDump();
+		blockFile b;
+		cout << b.ldump();
 	}
 	else if(arg1 == "-b"){
 		blockFile b;
@@ -98,8 +96,8 @@ int main(int argc, char* argv[]) {
 	else if(arg1 == "-d"){ //delete a record
 
 		blockFile b;
-		if(b.delRecord(arg2))
-			cout << "Record deleted successfully\n"
+		if (b.delRecord(arg2))
+			cout << "Record deleted successfully\n";
 		else
 			cout << "Failed to delete record\n";
 	}
@@ -233,16 +231,4 @@ int main(int argc, char* argv[]) {
 	inFile.close();
 
 	return 1;
-}
-
-
-
-void physicalDump(const blockFile& b) {
-	b.dump();
-
-}
-
-void logicalDump(const blockFile& b) {
-	b.dump();
-
 }

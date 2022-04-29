@@ -35,7 +35,8 @@ void recBuf::write(string& blockText){
 
 bool recBuf::unpack(zip& z) {
 	
-	string temp = buf[0];
+	string temp = "";
+	temp.push_back(buf[0]);
 	temp.push_back(buf[1]);
 	int size = stoi(temp);
 	temp = "";

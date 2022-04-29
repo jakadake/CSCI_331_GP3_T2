@@ -2,7 +2,6 @@
 *block.cpp
 */
 #include "block.h"
-#include "blockBuf.h"
 
 block::block(){
 	active = 0;
@@ -47,6 +46,7 @@ block::block(block& b1, block& b2) {
 	this->currentSize = b1.currentSize + b2.currentSize;
 	this->prev = b1.prev;
 	this->next = b2.next;
+	b2.active = false;
 }
 
 bool block::addRecord(zip& newzip){
@@ -75,12 +75,12 @@ void block::split(block& newBlock){
 	int start = (records.size() / 2);
 
 	for(int i = start; i < records.size(); i++){
-		newBlock.addRecord(records(i));
+		newBlock.addRecord(records[i]);
 		change++;
 	}
 
 	for(int j = 0; j < change; j++){
-		delRecord(records(start).getNum());
+		delRecord(records[start].getNum());
 	}
 
 	findHighestZip();
@@ -111,6 +111,7 @@ int block::findHighestZip(){
 		if (highestZip < records[i].getNum())
 			highestZip = records[i].getNum();
 	}
+	return highestZip;
 }
 
 int block::getSize(zip zipper){
@@ -128,7 +129,7 @@ int block::getSize(zip zipper){
 
 void block::getRecords(vector<zip>& rtn){
 	for (int i = 0; i < records.size(); i++) {
-		rtn[i] = records[i];
+		rtn.push_back(records[i]);
 	}
 }
 
@@ -147,45 +148,3 @@ bool block::getZip(zip& rtn, int target){
 	return false;
 }
 
-string block::ldump() {
-
-	recBuf rec;
-	string temp = "", rtn = "";
-
-	rtn.append("active? ");
-	if (active)
-		rtn.append("TRUE\n");
-	else
-		rtn.append("FALSE\n");
-
-	rtn.append("Previous Block Number: ");
-	rtn.append(to_string(prev));
-	rtn.push_back('\n');
-
-	rtn.append("Next Block Number: ");
-	rtn.append(to_string(next));
-	rtn.push_back('\n');
-
-	rtn.append("Highest Zip: ");
-	rtn.append(to_string(highestZip));
-	rtn.push_back('\n');
-
-	rtn.append("Record Count: ");
-	rtn.append(to_string(recCount));
-	rtn.push_back('\n');
-
-	rtn.append("Current Size: ");
-	rtn.append(to_string(currentSize));
-	rtn.push_back('\n');
-
-	for (int i = 0; i < records.size(); i++) {
-		rec.pack(records[i]);
-		rec.write(temp);
-		rtn.append(temp);
-		rec.clear();
-		temp = "";
-	}
-	return rtn;
-}
-
-string block::pdump() {blockBuf b; b.pack(*this); return b.getText();}

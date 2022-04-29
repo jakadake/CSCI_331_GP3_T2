@@ -5,13 +5,16 @@
 */
 #pragma once
 
+#ifndef BLOCKINDEX
+#define BLOCKINDEX
+
 #include <fstream>
 #include <vector>
 #include "block.h"
 
 using namespace std;
 
-struct indexElement {
+struct bIndexElement {
 	int zip;
 	int RBN;
 	bool active;
@@ -82,5 +85,6 @@ public:
 private:
 
 	int numBlocks, numAvail;
-	vector<indexElement> index;
+	vector<bIndexElement> index;
 };
+#endif

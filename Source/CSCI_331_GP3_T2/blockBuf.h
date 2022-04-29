@@ -4,17 +4,16 @@
 #ifndef BLOCKBUF
 #define BLOCKBUF
 
+#include <vector>
+#include <iostream>
 #include <string>
 #include "zip.h"
 #include "recBuf.h"
-#include "blockFile.h" 
 #include "block.h"
-#include <vector>
-#include <iostream>
 
 using namespace std;
 
-const int SIZE = 512;
+const int BUFSIZE = 512;
 
 
 class blockBuf {
@@ -22,7 +21,7 @@ public:
 	/*
 	* @brief Default Constructor.
 	*/
-	blockBuf();
+	blockBuf() { blockText = ""; index = 0; };
 
 
 	/*

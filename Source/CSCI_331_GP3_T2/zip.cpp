@@ -46,10 +46,10 @@ zip::zip(const zip& oldZip)
 const int zip::getSize() {
 	string size = "";
 	size.append(to_string(num));
-	size.append(to_string(city));
-	size.append(to_string(stateCode));
-	size.append(to_string(county));
+	size.append(city);
+	size.append(stateCode);
+	size.append(county);
 	size.append(to_string(lat));
-	size.append(to_string(long));
+	size.append(to_string(lon));
 	return size.size();
 }

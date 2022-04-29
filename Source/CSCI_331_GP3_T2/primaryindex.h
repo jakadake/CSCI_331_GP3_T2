@@ -4,6 +4,8 @@
 * for the corresponding primary key.     
 *
 */
+#ifndef PRIMARYINDEX
+#define PRIMARYINDEX 
 
 #include <vector>
 #include <iostream>
@@ -70,3 +72,5 @@ private:
 	fstream dFile, iFile;
 
 };
+
+#endif

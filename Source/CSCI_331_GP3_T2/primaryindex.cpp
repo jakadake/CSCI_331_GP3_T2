@@ -3,13 +3,9 @@
 * Member functions for the primaryindex class. 
 */
 
-#include "LiBuffer.h" 
+
 #include "primaryindex.h"
-#include "zip.h"
-#include <iostream>
-#include <string>
-#include <fstream>
-#include <vector>
+
 
 using namespace std;
 
@@ -17,9 +13,12 @@ static const short numStates = 57; // number of possible states/regions
 
 
 void primaryIndex::getIndex(vector<indexElement>& rtn){
+
 	for (int i = 0; i < index.size(); i++) {
+
 		rtn[i].zip = index[i].zip;
 		rtn[i].offset = index[i].offset;
+
 	}
 }
 /*
@@ -29,27 +28,43 @@ void primaryIndex::getIndex(vector<indexElement>& rtn){
 */
 
 void primaryIndex::add(int z, unsigned long o) {
+
 	indexElement temp = {z, o};
 	int i = 0;
+
 	if (recCount == 0) {
+
 		index.push_back(temp);
+
 	} else {
+
 		while (i < recCount && index[i].zip < z) {
+
 			i++;
+
 		}
 		if (i == recCount) {
+
 			index.push_back(temp);
+
 		}
+
 		else if (i == 0) {
+
 			index.insert(index.begin(), temp);
+
 		} else {
+
 			//i--;
 			vector<indexElement>::iterator it;
 			it = index.begin();
 			index.insert(it + i, temp);
+
 		}
 	}
+
 	recCount++;
+
 }
 
 /*
@@ -60,8 +75,10 @@ void primaryIndex::add(int z, unsigned long o) {
 */
 
 unsigned long primaryIndex::search(int target) {
+
 	int off = binSearch(target, 0, recCount - 1);
 	return off;
+
 }
 
 /*
@@ -72,18 +89,27 @@ unsigned long primaryIndex::search(int target) {
 
 unsigned long primaryIndex::binSearch(int target, int l, int r) {
 
-	if (l > r) { return 0; }
+	if (l > r) { 
+		return 0; 
+	}
+
 	if (r >= l) {
+
 		int mid = (l + r) / 2;		//nothing to see here
-		//cout << index[mid].zip << ' ' << index[mid].offset << endl;
-		//cout << l << ' ' << mid << ' ' << r << endl;
+
 		if (index[mid].zip == target) {
+
 			cout << "Target hit!: " << index[mid].zip << ' ' << index[mid].offset << endl;
 			return index[mid].offset;
+
 		}
+
 		else if (index[mid].zip > target)
+
 			binSearch(target, l, mid - 1);
+
 		else   //index[mid].getZip() < target
+
 			binSearch(target, mid + 1, r);	
 	}
 }

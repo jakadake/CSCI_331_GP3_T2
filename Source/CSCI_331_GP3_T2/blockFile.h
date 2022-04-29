@@ -1,5 +1,7 @@
 #pragma once
 
+#ifndef BLOCKFILE
+#define BLOCKFILE
 
 #include "blockBuf.h"
 #include "recBuf.h"
@@ -9,19 +11,24 @@
 #include "LIBuffer.h"
 #include "primaryindex.h"
 
-const int SIZE = 512;
+const int FILESIZE = 512;
 
 class blockFile {
 public:
+
+	/*
+	* @brief default constructor
+	*
+	*
+	*/
+	blockFile();
 
 	/*
 	* @brief specified constructor
 	* @pre takes a string as parameter
 	* @post opens file specified by parameter
 	*/
-	blockFile(string bFile);
-	
-	blockFile(string index = "IndexFile.index", string data = "DataFile.licsv");
+	blockFile(string bFile) { open(bFile); };
 
 	/*
 	* @brief length indicated to block function
@@ -64,7 +71,14 @@ public:
 	* @pre
 	* @post
 	*/
-	void dump();
+	string pdump();
+
+	/**
+	* @brief logical dump function
+	* @pre
+	* @post
+	*/
+	string ldump();
 
 	/**
 	* @brief split function
@@ -109,3 +123,5 @@ private:
 	blockBuf buf;
 	blockIndex index;
 };
+
+#endif BLOCKFILE

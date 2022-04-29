@@ -3,14 +3,13 @@
 */
 
 #include "blockBuf.h"
-#include "recBuf.h"
 
 
 void blockBuf::read(ifstream& inFile, int RBN) {
 	
 	int index = 0;
-	inFile.seekg(RBN*512);
-	while(!inFile.eof() && index != 512){
+	inFile.seekg(RBN*BUFSIZE);
+	while(!inFile.eof() && index != BUFSIZE) {
 		blockText.push_back(inFile.get());
 		index++;
 	}
@@ -54,7 +53,7 @@ void blockBuf::unpack(block& b) {
 	string temp;
 	recBuf rec;
 	int recSize;
-	int count;
+	int count = 0;
 
 	while (index != blockText.size()) {
 		temp = blockText[index++];

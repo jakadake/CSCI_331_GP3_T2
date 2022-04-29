@@ -31,11 +31,11 @@ int blockIndex::search(int zip){
 	return tempRBN;
 }
 
-int findHighest(){
+int blockIndex::findHighest(){
 	int tempZip = 0;
 	int tempRBN = 0;
 	
-	if(index.size == 0){
+	if(index.size() == 0) {
 		return 0;
 	} 
 
@@ -50,7 +50,7 @@ int findHighest(){
 }
 
 void blockIndex::add(block b, int r) {
-	indexElement temp;
+	bIndexElement temp;
 	temp.zip = b.getHighestZip();
 	temp.RBN = r;
 	temp.active = true;
@@ -89,7 +89,7 @@ void blockIndex::readFromFile(string in = "IndexFile.bindex") {
 	ifstream iFile;
 	iFile.open(in);
 	char trash;
-	indexElement temp;
+	bIndexElement temp;
 
 	if (iFile >> numBlocks >> trash >> numAvail >> trash) {
 
