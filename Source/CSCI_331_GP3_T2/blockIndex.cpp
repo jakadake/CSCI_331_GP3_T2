@@ -22,7 +22,7 @@ int blockIndex::search(int zip){
 				tempZip = index[i].zip;
 			}
 		}
-		else if (index[i].zip > zip){
+		else if (index[i].zip >= zip){
 			tempRBN = index[i].RBN;
 			tempZip = index[i].zip;
 			found = true;

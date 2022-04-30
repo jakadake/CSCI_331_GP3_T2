@@ -45,7 +45,8 @@ void blockFile::liToBlock(string in, string liData) {
 		addRecord(z);
 
 	}
-	writeHeader();
+	oData.seekp(0);
+	oData << writeHeader();
 }
 
 bool blockFile::delRecord(string zip){
@@ -129,10 +130,13 @@ bool blockFile::delRecord(string zip){
 bool blockFile::addRecord(zip& z) {
 
 	block temp1, temp2;
+	temp1.setActive(true);
 	int rbn = index.search(z.getNum());
 
 	if (rbn == 0) {
 
+		if (numBlocks == 0)
+			numBlocks++;
 		rbn = index.findHighest();
 
 		if (rbn == 0) {
@@ -153,6 +157,7 @@ bool blockFile::addRecord(zip& z) {
 			buf.read(iData, rbn);
 			buf.unpack(temp1);
 			buf.clear();
+			index.add(temp1, rbn);
 
 			if (!temp1.addRecord(z)) {
 
@@ -175,6 +180,7 @@ bool blockFile::addRecord(zip& z) {
 		buf.read(iData, rbn);
 		buf.unpack(temp1);
 		buf.clear();
+		index.add(temp1, rbn);
 
 		if (!temp1.addRecord(z)) {
 
@@ -379,27 +385,43 @@ bool blockFile::split(block& b)
 {
 	if (b.getActive()) {
 
+		int rbn;
 		int tempi;
 		block temp1, temp2;
+
+		rbn = index.search(b.findHighestZip());
 		b.split(temp1);
+		//if (b.getNext() == 0)
 
-		if (avail == 0){
+		//if (b.getPrev() == 0)
 
-			tempi = b.getNext();
+
+			if (b.getNext() == 0) {
+				temp1.setNext(0);
+
+			}
+			else {
+				tempi = b.getNext();
+				buf.read(iData, tempi);
+				buf.unpack(temp2);
+
+				temp1.setNext(tempi);
+				temp2.setPrev(numBlocks);
+				buf.clear();
+			}
+
 			b.setNext(++numBlocks);
 
-			buf.read(iData, b.getPrev());
-			buf.unpack(temp2);
-			buf.clear();
-
-			temp1.setPrev(temp2.getNext());
-			temp1.setNext(tempi);
+			temp1.setPrev(rbn);
 			temp1.setActive(true);
 
+			b.findHighestZip();
+			temp1.findHighestZip();
+
 			buf.pack(b);
-			buf.write(oData, tempi);
+			buf.write(oData, rbn);
 			buf.clear();
-			index.add(b, tempi);
+			index.add(b, rbn);
 
 			buf.pack(temp1);
 			buf.write(oData, numBlocks);
@@ -407,7 +429,8 @@ bool blockFile::split(block& b)
 			index.add(temp1, numBlocks);
 
 			return true;
-		}
+
+		/*
 		else{
 
 			tempi = b.getNext();
@@ -441,6 +464,7 @@ bool blockFile::split(block& b)
 
 			return true;
 		}
+		*/
 	}
 
 	return false;

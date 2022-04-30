@@ -7,8 +7,9 @@
 
 void blockBuf::read(ifstream& inFile, int RBN) {
 	
+	unsigned long NBR(RBN * 512);
 	int index = 0;
-	inFile.seekg(RBN*BUFSIZE);
+	inFile.seekg(NBR);
 	while(!inFile.eof() && index != BUFSIZE) {
 		blockText.push_back(inFile.get());
 		index++;
@@ -35,7 +36,8 @@ void blockBuf::pack(block &b){
 
 
 void blockBuf::write(ofstream& outfile, int RBN){
-	outfile.seekp(RBN * 512);
+	unsigned long NBR = (RBN * 512);
+	outfile.seekp(NBR);
 
 	for (int i = 0; i < 512; i++) {
 		if (i < blockText.size()) {
@@ -51,6 +53,7 @@ void blockBuf::write(ofstream& outfile, int RBN){
 
 void blockBuf::unpack(block& b) {
 
+
 	readHeader(b);
 
 	zip tempZip;
@@ -60,8 +63,11 @@ void blockBuf::unpack(block& b) {
 	int count;
 	int numRecs = b.getRecCount();
 	int recCounter = 0;
+	int tempCurrentSize = b.getCurrentSize();
 
-	while (index != b.getCurrentSize()) {
+	b.setCurrentSize(0);
+
+	while (index != tempCurrentSize) {
 		if (recCounter == numRecs)
 			break;
 
@@ -86,6 +92,7 @@ void blockBuf::unpack(block& b) {
 	}
 	index = 0;
 	blockText = "";
+	b.setCurrentSize(tempCurrentSize);
 }
 
 

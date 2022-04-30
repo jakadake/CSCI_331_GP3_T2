@@ -135,13 +135,14 @@ public:
 	*/
 	void setHighestZip(int highestZip) { this->highestZip = highestZip; };
 
+	/*
+* @brief Sets the highest zip for a block.
+* @pre Requires that the block is not empty.
+*/
+	int findHighestZip();
+
 private:
 
-	/*
-	* @brief Sets the highest zip for a block.
-	* @pre Requires that the block is not empty. 
-	*/
-	int findHighestZip();
 
 	/*
 	* @brief Gives the size of a zip record.  

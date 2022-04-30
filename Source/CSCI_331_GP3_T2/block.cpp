@@ -107,7 +107,7 @@ void block::split(block& newBlock){
 	for(int j = 0; j < change; j++){
 		delRecord(records[start].getNum());
 	}
-
+	newBlock.setNext(getNext());
 	findHighestZip();
 	newBlock.findHighestZip();
 }
@@ -115,11 +115,11 @@ void block::split(block& newBlock){
 bool block::delRecord(int zip){
 
 	for(int i = 0; i < recCount; i++){
-		if(records[i].getNum() == zip){
-			records.erase(records.begin() + i);
+		if(records[i].getNum() == zip && records.size() >= recCount){
 			int count = zipSize(records[i]);
+			records.erase(records.begin() + i);
 			recCount--;
-			currentSize -= (count + 2);
+			currentSize -= count;
 			findHighestZip();
 			if (currentSize == 0)
 				active = false;
@@ -132,6 +132,7 @@ bool block::delRecord(int zip){
 
 int block::findHighestZip(){
 
+	highestZip = 0;
 	for (int i = 0; i < records.size(); i++) {
 		if (highestZip < records[i].getNum())
 			highestZip = records[i].getNum();
